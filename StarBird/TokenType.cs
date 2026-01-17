@@ -38,7 +38,7 @@ public enum TokenType
     FUN,           // fun
     FOR,           // for
     IF,            // if
-    NIL,           // nil
+    NULL,           // null
     OR,            // or
     PRINT,         // print
     RETURN,        // return

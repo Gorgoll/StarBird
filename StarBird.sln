@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarBird", "StarBird\StarBird.csproj", "{AEEE8874-AAB2-4738-B453-BD5F92A489FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tool", "tool\tool.csproj", "{39011FEB-4DA5-40F6-9917-503EC80E6E93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{AEEE8874-AAB2-4738-B453-BD5F92A489FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEEE8874-AAB2-4738-B453-BD5F92A489FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEEE8874-AAB2-4738-B453-BD5F92A489FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39011FEB-4DA5-40F6-9917-503EC80E6E93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39011FEB-4DA5-40F6-9917-503EC80E6E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39011FEB-4DA5-40F6-9917-503EC80E6E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39011FEB-4DA5-40F6-9917-503EC80E6E93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
