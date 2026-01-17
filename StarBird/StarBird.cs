@@ -1,26 +1,29 @@
-﻿namespace StarBird;
+﻿
+namespace StarBird;
 
 public class StarBird
 {
-    static bool hadError = false;
+    private static readonly Interpreter Interpreter = new();
+    static bool hadError;
+    static bool hadRuntimeError = false;
     public static void Main(string[] args)
     {
         if (args.Length > 1)
         {
             Console.WriteLine("Usage: StarBird [script]");
-            Environment.Exit(64);
+            System.Environment.Exit(64);
         }
         else if (args.Length == 1)
         {
-            runFile(args[0]);
+            RunFile(args[0]);
         }
         else
         {
-            runPrompt();
+            RunPrompt();
         }
     }
     
-    private static void runPrompt()
+    private static void RunPrompt()
     {
         hadError = false;
 
@@ -32,37 +35,38 @@ public class StarBird
             if (line == null)
                 break;
 
-            run(line);
+            Run(line);
             hadError = false;
         }
     }
     
-    private static void runFile(string path)
+    private static void RunFile(string path)
     {
         string source = File.ReadAllText(path);
-        run(source);
+        Run(source);
 
-        if (hadError) Environment.Exit(65);
+        if (hadError) System.Environment.Exit(65);
+        if (hadRuntimeError) System.Environment.Exit(70);
     }
     
-    private static void run(string source)
+    private static void Run(string source)
     {
         Scanner scanner = new Scanner(source);
-        List<Token> tokens = scanner.scanTokens();
+        List<Token> tokens = scanner.ScanTokens();
 
-        foreach (var token in tokens)
-        {
-            Console.WriteLine(token);
-        }
+        Parser parser = new Parser(tokens);
+        List<Stmt> statements = parser.Parse();
+
+        if (hadError) return;
+        Interpreter.Interpret(statements);
     }
-
     
-    public static void error(int line, string message)
+    public static void Error(int line, string message)
     {
-        report(line, "", message);
+        Report(line, "", message);
     }
 
-    private static void report(int line, string where, string message)
+    private static void Report(int line, string where, string message)
     {
         Console.Error.WriteLine($"[line {line}] Error{where}: {message}");
         hadError = true;
