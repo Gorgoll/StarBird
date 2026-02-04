@@ -17,7 +17,7 @@ public class Scanner {
         { "for",    TokenType.FOR },
         { "fun",    TokenType.FUN },
         { "if",     TokenType.IF },
-        { "nil",    TokenType.NIL },
+        { "null",    TokenType.NULL },
         { "or",     TokenType.OR },
         { "print",  TokenType.PRINT },
         { "return", TokenType.RETURN },
@@ -36,18 +36,18 @@ public class Scanner {
         return current >= source.Length;
     }
 
-    public List<Token> scanTokens() {
+    public List<Token> ScanTokens() {
         while (!IsAtEnd()) {
             start = current;
-            scanToken();
+            ScanToken();
         }
 
         tokens.Add(new Token(TokenType.EOF, "", null, line));
         return tokens;
     }
     
-    private void scanToken() {
-        char c = advance();
+    private void ScanToken() {
+        char c = Advance();
         switch (c) {
             case '(': addToken(TokenType.LEFT_PAREN); break;
             case ')': addToken(TokenType.RIGHT_PAREN); break;
@@ -60,20 +60,20 @@ public class Scanner {
             case ';': addToken(TokenType.SEMICOLON); break;
             case '*': addToken(TokenType.STAR); break; 
             case '!':
-                addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+                addToken(Match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
                 break;
             case '=':
-                addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+                addToken(Match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
                 break;
             case '<':
-                addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+                addToken(Match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
                 break;
             case '>':
-                addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+                addToken(Match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
                 break;
             case '/':
-                if (match('/')) {
-                    while (peek() != '\n' && !IsAtEnd()) advance();
+                if (Match('/')) {
+                    while (Peek() != '\n' && !IsAtEnd()) Advance();
                 } else {
                     addToken(TokenType.SLASH);
                 }
@@ -88,29 +88,32 @@ public class Scanner {
                 break;
             case '"': String(); break;
             case 'o':
-                if (match('r')) {
+                if (Match('r')) {
                     addToken(TokenType.OR);
                 }
                 else if (isAlpha(c))
                 {
-                    identifier();
+                    Identifier();
                 }
                 else
                 {
-                    StarBird.error(line, "Unexpected character.");
+                    StarBird.Error(line, "Unexpected character.");
                 }
                 break;
 
             default:
                 if (isDigit(c)) {
-                    number();
+                    Number();
+                } else if (isAlpha(c)) {
+                    Identifier();
                 } else {
-                    StarBird.error(line, "Unexpected character.");
+                    StarBird.Error(line, "Unexpected character.");
                 }
                 break;
+
         }
     }
-    private bool match(char expected) 
+    private bool Match(char expected) 
     {
         if (IsAtEnd()) return false;
         if (source[current] != expected) return false;
@@ -119,7 +122,7 @@ public class Scanner {
         return true;
     }
     
-    private char advance() 
+    private char Advance() 
     {
         return source[current++];
     }
@@ -131,25 +134,25 @@ public class Scanner {
 
     private void addToken(TokenType type, Object literal) 
     {
-        String text = source.Substring(start, current);
+        string text = source.Substring(start, current - start);
         tokens.Add(new Token(type, text, literal, line));
     }
     
     private void String() 
     {
-        while (peek() != '"' && !IsAtEnd()) {
-            if (peek() == '\n') line++;
-            advance();
+        while (Peek() != '"' && !IsAtEnd()) {
+            if (Peek() == '\n') line++;
+            Advance();
         }
 
         if (IsAtEnd()) {
-            StarBird.error(line, "Unterminated string.");
+            StarBird.Error(line, "Unterminated string.");
             return;
         }
         
-        advance();
+        Advance();
         
-        String value = source.Substring(start + 1, current - 1);
+        string value = source.Substring(start + 1, current - start - 2);
         addToken(TokenType.STRING, value);
     }
     
@@ -157,33 +160,34 @@ public class Scanner {
         return c >= '0' && c <= '9';
     } 
     
-    private void number() {
-        while (isDigit(peek())) advance();
+    private void Number() {
+        while (isDigit(Peek())) Advance();
         
-        if (peek() == '.' && isDigit(peekNext())) {
-            advance();
+        if (Peek() == '.' && isDigit(PeekNext())) {
+            Advance();
 
-            while (isDigit(peek())) advance();
+            while (isDigit(Peek())) Advance();
         }
 
-        addToken(TokenType.NUMBER,
-            Double.Parse(source.Substring(start, current)));
+        string numberText = source.Substring(start, current - start);
+        addToken(TokenType.NUMBER, Double.Parse(numberText, System.Globalization.CultureInfo.InvariantCulture));
+
     }
     
-    private char peekNext() {
-        if (current + 1 >= source.Length) return '\0';
+    private char PeekNext() {
+        if (current + 1 >= source.Length - 1) return '\0';
         return source[current + 1];
     } 
     
-    private char peek() 
+    private char Peek() 
     {
         if (IsAtEnd()) return '\0';
         return source[current];
     }
     
-    private void identifier() {
-        while (isAlphaNumeric(peek())) advance();
-        String text = source.Substring(start, current);
+    private void Identifier() {
+        while (isAlphaNumeric(Peek())) Advance();
+        string text = source.Substring(start, current - start);
         TokenType type;
         if (!keywords.TryGetValue(text, out type))
         {
