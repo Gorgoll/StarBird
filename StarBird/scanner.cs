@@ -2,7 +2,7 @@ namespace StarBird;
 
 public class Scanner {
     private readonly String source;
-    private readonly List<Token> tokens = new List<Token>();
+    private readonly List<Token> tokens = new();
     
     private int start;
     private int current;
