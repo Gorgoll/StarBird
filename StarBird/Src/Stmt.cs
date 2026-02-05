@@ -6,63 +6,82 @@ public abstract class Stmt
     {
         R VisitBlockStmt(Block stmt);
         R VisitExpressionStmt(Expression stmt);
+        R VisitIfStmt(If stmt);
         R VisitPrintStmt(Print stmt);
         R VisitVarStmt(Var stmt);
     }
 
     public abstract R Accept<R>(IVisitor<R> visitor);
-         public sealed class Block : Stmt
+    public sealed class Block : Stmt
     {
         public Block(List<Stmt> statements)
         {
-             this.statements = statements;
+           this.statements = statements;
         }
 
-         public readonly List<Stmt> statements;
+        public readonly List<Stmt> statements;
 
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitBlockStmt(this);
         }
     }
-         public sealed class Expression : Stmt
+    public sealed class Expression : Stmt
     {
         public Expression(Expr expression)
         {
-             this.expression = expression;
+           this.expression = expression;
         }
 
-         public readonly Expr expression;
+        public readonly Expr expression;
 
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitExpressionStmt(this);
         }
     }
-         public sealed class Print : Stmt
+    public sealed class If : Stmt
+    {
+        public If(Expr condition, Stmt thenBranch, Stmt elseBranch)
+        {
+           this.condition = condition;
+           this.thenBranch = thenBranch;
+           this.elseBranch = elseBranch;
+        }
+
+        public readonly Expr condition;
+        public readonly Stmt thenBranch;
+        public readonly Stmt elseBranch;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitIfStmt(this);
+        }
+    }
+    public sealed class Print : Stmt
     {
         public Print(Expr expression)
         {
-             this.expression = expression;
+           this.expression = expression;
         }
 
-         public readonly Expr expression;
+        public readonly Expr expression;
 
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitPrintStmt(this);
         }
     }
-         public sealed class Var : Stmt
+    public sealed class Var : Stmt
     {
         public Var(Token name, Expr initializer)
         {
-             this.name = name;
-             this.initializer = initializer;
+           this.name = name;
+           this.initializer = initializer;
         }
 
-         public readonly Token name;
-         public readonly Expr initializer;
+        public readonly Token name;
+        public readonly Expr initializer;
 
         public override R Accept<R>(IVisitor<R> visitor)
         {

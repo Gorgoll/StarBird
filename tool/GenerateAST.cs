@@ -26,6 +26,7 @@ namespace Tool
                     "Binary   : Expr left, Token op, Expr right",
                     "Grouping : Expr expression",
                     "Literal  : object value",
+                    "Logical   : Expr left, Token op, Expr right",
                     "Unary    : Token op, Expr right",
                     "Variable : Token name"
                 }
@@ -34,6 +35,7 @@ namespace Tool
             DefineAst(outputDir, "Stmt", new List<string>{
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
+                "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Expr initializer"
             });
@@ -70,7 +72,7 @@ namespace Tool
             string className,
             string fieldList)
         {
-            writer.WriteLine($"         public sealed class {className} : {baseName}");
+            writer.WriteLine($"    public sealed class {className} : {baseName}");
             writer.WriteLine("    {");
 
             // Constructor
@@ -81,7 +83,7 @@ namespace Tool
             foreach (string field in fields)
             {
                 string name = field.Split(' ')[1];
-                writer.WriteLine($"             this.{name} = {name};");
+                writer.WriteLine($"           this.{name} = {name};");
             }
 
             writer.WriteLine("        }");
@@ -90,7 +92,7 @@ namespace Tool
             // Fields
             foreach (string field in fields)
             {
-                writer.WriteLine($"         public readonly {field};");
+                writer.WriteLine($"        public readonly {field};");
             }
             
             writer.WriteLine();

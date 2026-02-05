@@ -206,4 +206,4 @@ public class Scanner {
     private bool isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
-}   
+}
