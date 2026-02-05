@@ -53,7 +53,7 @@ public abstract class Stmt
             return visitor.VisitPrintStmt(this);
         }
     }
-         public sealed class Var : Stmt
+    public sealed class Var : Stmt
     {
         public Var(Token name, Expr initializer)
         {
@@ -69,4 +69,5 @@ public abstract class Stmt
             return visitor.VisitVarStmt(this);
         }
     }
+    
 }

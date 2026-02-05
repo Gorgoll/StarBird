@@ -16,7 +16,7 @@ public class Scanner {
         { "false",  TokenType.FALSE },
         { "for",    TokenType.FOR },
         { "fun",    TokenType.FUN },
-        { "if",     TokenType.IF },
+        { "if",     TokenType.WIF },
         { "null",    TokenType.NULL },
         { "or",     TokenType.OR },
         { "print",  TokenType.PRINT },
@@ -87,20 +87,6 @@ public class Scanner {
                 line++;
                 break;
             case '"': String(); break;
-            case 'o':
-                if (Match('r')) {
-                    addToken(TokenType.OR);
-                }
-                else if (isAlpha(c))
-                {
-                    Identifier();
-                }
-                else
-                {
-                    StarBird.Error(line, "Unexpected character.");
-                }
-                break;
-
             default:
                 if (isDigit(c)) {
                     Number();

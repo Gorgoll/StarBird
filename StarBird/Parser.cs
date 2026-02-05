@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic.CompilerServices;
+
 namespace StarBird;
 
 public class Parser
@@ -41,13 +43,29 @@ public class Parser
         
     }
     
-    private Stmt Statement() {
+    private Stmt Statement()
+    {
+        if (Match(TokenType.WIF)) return IfStatement();
         if (Match(TokenType.PRINT)) return PrintStatement();
         if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
         
         return ExpressionStatement();
     }
-    
+
+    private Stmt IfStatement()
+    {
+          Consume(TokenType.LEFT_PAREN, "Expect '('.");
+          Expr condition = Expression();
+          Consume(TokenType.RIGHT_PAREN, "Expect ')'.");
+          Stmt thenBranch = Statement();
+          Stmt elseBranch = null;
+          if (Match(TokenType.ELSE))
+          {
+              elseBranch = Statement();
+          }
+
+          return new Stmt.Wif(condition, thenBranch, elseBranch);
+    }
     private Stmt PrintStatement() {
         Expr value = Expression();
         Consume(TokenType.SEMICOLON, "Expect ';' after value.");
@@ -89,7 +107,7 @@ public class Parser
 
     private Expr Assignment()
     {
-        Expr expr = Equality();
+        Expr expr = Or();
 
         if (Match(TokenType.EQUAL))
         {
@@ -103,6 +121,34 @@ public class Parser
             }
 
             Error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
+    }
+
+    private Expr Or()
+    {
+        Expr expr = And();
+
+        while (Match(TokenType.OR))
+        {
+            Token op = Previous();
+            Expr right = And();
+            expr = new Expr.Logical(expr, op, right);
+        }
+
+        return expr;
+    }
+
+    private Expr And()
+    {
+        Expr expr = Equality();
+
+        while (Match(TokenType.AND))
+        {
+            Token op = Previous();
+            Expr right = Equality();
+            expr = new Expr.Logical(expr, op, right);
         }
 
         return expr;
@@ -277,7 +323,7 @@ public class Parser
                 case TokenType.FUN:
                 case TokenType.VAR:
                 case TokenType.FOR:
-                case TokenType.IF:
+                case TokenType.WIF:
                 case TokenType.WHILE:
                 case TokenType.PRINT:
                 case TokenType.RETURN:

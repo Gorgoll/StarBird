@@ -37,7 +37,7 @@ public enum TokenType
     FALSE,         // false
     FUN,           // fun
     FOR,           // for
-    IF,            // if
+    WIF,            // if
     NULL,           // null
     OR,            // or
     PRINT,         // print
