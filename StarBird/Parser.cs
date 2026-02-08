@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.Marshalling;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace StarBird;
@@ -45,8 +48,10 @@ public class Parser
     
     private Stmt Statement()
     {
+        if (Match(TokenType.FOR)) return ForStatement();
         if (Match(TokenType.IF)) return IfStatement();
         if (Match(TokenType.PRINT)) return PrintStatement();
+        if (Match(TokenType.WHILE)) return WhileStatement();
         if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
         
         return ExpressionStatement();
@@ -84,6 +89,71 @@ public class Parser
         
         Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
         return new Stmt.Var(name, initializer);
+    }
+    
+    private Stmt WhileStatement() {
+        Consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.");
+        Expr condition = Expression();
+        Consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.");
+        Stmt body = Statement();
+
+        return new Stmt.While(condition, body);
+    }
+
+    private Stmt ForStatement()
+    {
+        Consume(TokenType.LEFT_PAREN,"Expect '(' after 'for'.");
+
+        Stmt initializer;
+        if (Match(TokenType.SEMICOLON))
+        {
+            initializer = null;
+        }
+        else if (Match(TokenType.VAR))
+        {
+            initializer = VarDeclaration();
+        }
+        else
+        {
+            initializer = ExpressionStatement();
+        }
+
+        Expr condition = null;
+        if (!Check(TokenType.SEMICOLON))
+        {
+            condition = Expression();
+        }
+        Consume(TokenType.SEMICOLON,"Expect ';' after loop condition.");
+
+        
+        Expr increment = null;
+        if (!Check(TokenType.RIGHT_PAREN))
+        {
+            increment = Expression();
+        }
+        Consume(TokenType.RIGHT_PAREN,"Expect  ')' after for clauses.");
+        
+        Stmt body = Statement();
+        
+        if (increment != null)
+        {
+            body = new Stmt.Block([
+                body, 
+                new Stmt.Expression(increment)
+            ]);
+        }
+
+        if (condition == null) condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if (initializer != null)
+        {
+            body = new Stmt.Block([
+                initializer,
+                body
+            ]);
+        }
+        return body;
     }
     
     private Stmt ExpressionStatement() {

@@ -37,7 +37,8 @@ namespace Tool
                 "Expression : Expr expression",
                 "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
-                "Var        : Token name, Expr initializer"
+                "Var        : Token name, Expr initializer",
+                "While      : Expr condition, Stmt body"     
             });
         }
 
@@ -49,7 +50,9 @@ namespace Tool
             string path = Path.Combine(outputDir, baseName + ".cs");
 
             using StreamWriter writer = new(path);
-
+            
+            writer.WriteLine("using System.Collections.Generic;");
+            writer.WriteLine();
             writer.WriteLine("namespace StarBird;");
             writer.WriteLine();
             writer.WriteLine($"public abstract class {baseName}");

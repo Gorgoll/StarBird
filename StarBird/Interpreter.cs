@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace StarBird;
 
 public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
@@ -111,7 +114,17 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         environment.Define(stmt.name.Lexeme, value);
         return null;
     }
-    
+
+    public object VisitWhileStmt(Stmt.While stmt)
+    {
+        while (IsTruthy(Evaluate(stmt.condition)))
+        {
+            Execute(stmt.body);
+        }
+
+        return null;
+    }
+
     public object VisitAssignExpr(Expr.Assign expr)
     {
         var value = Evaluate(expr.value);

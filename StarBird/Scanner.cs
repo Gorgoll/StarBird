@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace StarBird;
 
 public class Scanner {
@@ -87,20 +90,6 @@ public class Scanner {
                 line++;
                 break;
             case '"': String(); break;
-            case 'o':
-                if (Match('r')) {
-                    addToken(TokenType.OR);
-                }
-                else if (isAlpha(c))
-                {
-                    Identifier();
-                }
-                else
-                {
-                    StarBird.Error(line, "Unexpected character.");
-                }
-                break;
-
             default:
                 if (isDigit(c)) {
                     Number();
