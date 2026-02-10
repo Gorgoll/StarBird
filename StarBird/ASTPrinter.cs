@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace StarBird;
@@ -30,6 +31,11 @@ public class ASTPrinter : Expr.IVisitor<string>
     public string VisitAssignExpr(Expr.Assign expr)
     {
         return Parenthesize(expr.name.Lexeme, expr.value);
+    }
+
+    public string VisitLogicalExpr(Expr.Logical expr)
+    {
+        throw new NotImplementedException();
     }
 
     public string VisitVariableExpr(Expr.Variable expr)

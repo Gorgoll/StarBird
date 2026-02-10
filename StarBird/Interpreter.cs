@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace StarBird;
 
 public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
@@ -22,9 +25,9 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
 
     public object VisitLogicalExpr(Expr.Logical expr)
     {
-        object left = Evaluate(Expr.left);
+        object left = Evaluate(expr.left);
 
-        if (expr.op.type == TokenType.OR)
+        if (expr.op.Type == TokenType.OR)
         {
             if (IsTruthy(left)) return left;
         }
@@ -80,15 +83,15 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         return null;
     }
 
-    public object VisitWifStmt(Stmt.Wif stmt)
+    public object VisitIfStmt(Stmt.If stmt)
     {
         if (IsTruthy(Evaluate(stmt.condition)))
         {
-            Execute(Stmt.thenBranch);
+            Execute(stmt.thenBranch);
         }
         else if (stmt.elseBranch != null)
         {
-            Execute(Stmt.elseBranch);
+            Execute(stmt.elseBranch);
         }
         return null;
     }
@@ -111,7 +114,17 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         environment.Define(stmt.name.Lexeme, value);
         return null;
     }
-    
+
+    public object VisitWhileStmt(Stmt.While stmt)
+    {
+        while (IsTruthy(Evaluate(stmt.condition)))
+        {
+            Execute(stmt.body);
+        }
+
+        return null;
+    }
+
     public object VisitAssignExpr(Expr.Assign expr)
     {
         var value = Evaluate(expr.value);

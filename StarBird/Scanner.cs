@@ -1,8 +1,11 @@
+using System;
+using System.Collections.Generic;
+
 namespace StarBird;
 
 public class Scanner {
     private readonly String source;
-    private readonly List<Token> tokens = new();
+    private readonly List<Token> tokens = new List<Token>();
     
     private int start;
     private int current;
@@ -16,7 +19,7 @@ public class Scanner {
         { "false",  TokenType.FALSE },
         { "for",    TokenType.FOR },
         { "fun",    TokenType.FUN },
-        { "if",     TokenType.WIF },
+        { "if",     TokenType.IF },
         { "null",    TokenType.NULL },
         { "or",     TokenType.OR },
         { "print",  TokenType.PRINT },
@@ -192,4 +195,4 @@ public class Scanner {
     private bool isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
     }
-}   
+}

@@ -1,3 +1,5 @@
+using System;
+
 namespace StarBird;
 
 public class RuntimeError : Exception
