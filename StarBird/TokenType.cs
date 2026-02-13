@@ -14,6 +14,9 @@ public enum TokenType
     SEMICOLON,     // ;
     SLASH,         // /
     STAR,          // *
+    //Todo
+    MODULO,        // %
+    //
 
     // One or two character tokens
     BANG,          // !
@@ -24,6 +27,11 @@ public enum TokenType
     GREATER_EQUAL, // >=
     LESS,          // <
     LESS_EQUAL,    // <=
+    PLUS_PLUS,     // ++
+    //Todo
+    PLUS_EQUAL,    // +=
+    MINUS_EQUAL,   // -=
+    //
 
     // Literals
     IDENTIFIER,    // variable names, function names

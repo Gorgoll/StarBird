@@ -59,7 +59,9 @@ public class Scanner {
             case ',': addToken(TokenType.COMMA); break;
             case '.': addToken(TokenType.DOT); break;
             case '-': addToken(TokenType.MINUS); break;
-            case '+': addToken(TokenType.PLUS); break;
+            case '+':
+                addToken(Match('+') ? TokenType.PLUS_PLUS : TokenType.PLUS);
+                break;
             case ';': addToken(TokenType.SEMICOLON); break;
             case '*': addToken(TokenType.STAR); break; 
             case '!':
