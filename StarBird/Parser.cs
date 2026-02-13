@@ -365,8 +365,24 @@ public class Parser
 
     private Expr PostFix()
     {
-        Expr expr = Primary();
-
+        Expr expr = Primary();  
+        // Todo find a better way to do this
+        if (Match(TokenType.MINUS_MINUS))
+        {
+            if (expr is Expr.Variable variable)
+            {
+                expr = new Expr.Assign(variable.name,
+                    new Expr.Binary(
+                        new Expr.Variable(variable.name),
+                        new Token(TokenType.MINUS,"-", null, Previous().Line),
+                        new Expr.Literal(1.0))
+                );
+            }
+            else
+            {
+                ReportError(Previous(), "Expect expression.");
+            }
+        }
         if (Match(TokenType.PLUS_PLUS))
         {
             if (expr is Expr.Variable variable)
@@ -383,6 +399,7 @@ public class Parser
                 ReportError(Previous(), "Expect expression.");
             }
         }
+        
         
         return expr;
     }

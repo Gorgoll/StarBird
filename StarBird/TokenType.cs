@@ -28,6 +28,7 @@ public enum TokenType
     LESS,          // <
     LESS_EQUAL,    // <=
     PLUS_PLUS,     // ++
+    MINUS_MINUS,   // --
     //Todo
     PLUS_EQUAL,    // +=
     MINUS_EQUAL,   // -=
