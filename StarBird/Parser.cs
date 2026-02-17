@@ -335,7 +335,7 @@ public class Parser
             return new Expr.Unary(op, right);
         }
 
-        return Primary();
+        return PostFix();
     }
 
     private Expr Primary()
@@ -343,7 +343,7 @@ public class Parser
         if (Match(TokenType.FALSE)) return new Expr.Literal(false);
         if (Match(TokenType.TRUE)) return new Expr.Literal(true);
         if (Match(TokenType.NULL)) return new Expr.Literal(null);
-
+        
         if (Match(TokenType.NUMBER, TokenType.STRING))
         {
             return new Expr.Literal(Previous().Literal);
@@ -361,6 +361,47 @@ public class Parser
             return new Expr.Grouping(expr);
         }
         throw Error(Peek(), "Expect expression.");
+    }
+
+    private Expr PostFix()
+    {
+        Expr expr = Primary();  
+        // Todo find a better way to do this
+        if (Match(TokenType.MINUS_MINUS))
+        {
+            if (expr is Expr.Variable variable)
+            {
+                expr = new Expr.Assign(variable.name,
+                    new Expr.Binary(
+                        new Expr.Variable(variable.name),
+                        new Token(TokenType.MINUS,"-", null, Previous().Line),
+                        new Expr.Literal(1.0))
+                );
+            }
+            else
+            {
+                ReportError(Previous(), "Expect expression.");
+            }
+        }
+        if (Match(TokenType.PLUS_PLUS))
+        {
+            if (expr is Expr.Variable variable)
+            {
+                expr = new Expr.Assign(variable.name,
+                    new Expr.Binary(
+                        new Expr.Variable(variable.name),
+                        new Token(TokenType.PLUS,"+", null, Previous().Line),
+                        new Expr.Literal(1.0))
+                );
+            }
+            else
+            {
+                ReportError(Previous(), "Expect expression.");
+            }
+        }
+        
+        
+        return expr;
     }
 
     private Token Consume(TokenType type, string msg)
