@@ -60,6 +60,8 @@ public class StarBird
 
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.Parse();
+        
+        Console.WriteLine(new ASTPrinter().Print(statements));
 
         if (hadError) return;
         Interpreter.Interpret(statements);

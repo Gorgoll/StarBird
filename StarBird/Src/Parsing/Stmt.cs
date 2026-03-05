@@ -8,8 +8,10 @@ public abstract class Stmt
     {
         R VisitBlockStmt(Block stmt);
         R VisitExpressionStmt(Expression stmt);
+        R VisitFunctionStmt(Function stmt);
         R VisitIfStmt(If stmt);
         R VisitPrintStmt(Print stmt);
+        R VisitReturnStmt(Return stmt);
         R VisitVarStmt(Var stmt);
         R VisitWhileStmt(While stmt);
     }
@@ -43,6 +45,24 @@ public abstract class Stmt
             return visitor.VisitExpressionStmt(this);
         }
     }
+    public sealed class Function : Stmt
+    {
+        public Function(Token name, List<Token> param, List<Stmt> body)
+        {
+           this.name = name;
+           this.param = param;
+           this.body = body;
+        }
+
+        public readonly Token name;
+        public readonly List<Token> param;
+        public readonly List<Stmt> body;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitFunctionStmt(this);
+        }
+    }
     public sealed class If : Stmt
     {
         public If(Expr condition, Stmt thenBranch, Stmt elseBranch)
@@ -73,6 +93,22 @@ public abstract class Stmt
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitPrintStmt(this);
+        }
+    }
+    public sealed class Return : Stmt
+    {
+        public Return(Token keyword, Expr value)
+        {
+           this.keyword = keyword;
+           this.value = value;
+        }
+
+        public readonly Token keyword;
+        public readonly Expr value;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitReturnStmt(this);
         }
     }
     public sealed class Var : Stmt

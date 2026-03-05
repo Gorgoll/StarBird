@@ -5,8 +5,26 @@ namespace StarBird;
 
 public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
 {
-    private Environment environment = new();
-    
+    public readonly Environment globals = new();
+    private Environment environment;
+    public Interpreter()
+    {
+        environment = globals;
+        int arity()
+        {
+            return 0;
+        }
+
+        object call(Interpreter interpreter, List<object> arguments)
+        {
+            return (double)DateTime.Now.Millisecond / 1000;
+        }
+
+        string toString()
+        {
+            return "<native fn>";
+        }
+    }
     public void Interpret(List<Stmt> statements) { 
         try {
             foreach (Stmt statement in statements)
@@ -43,19 +61,19 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         return Evaluate(expr.expression);
     }
     
-    
     private object Evaluate(Expr expr) {
         return expr.Accept(this);
     }
 
     private void Execute(Stmt stmt)
     {
-        stmt.Accept(this);
+            stmt.Accept(this);
     }
 
-    private void ExecuteBlock(List<Stmt> statements, Environment environment)
+    public void ExecuteBlock(List<Stmt> statements, Environment environment)
     {
         Environment previous = this.environment;
+
         try
         {
             this.environment = environment;
@@ -83,6 +101,13 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         return null;
     }
 
+    public object VisitFunctionStmt(Stmt.Function stmt)
+    {
+        StarBirdFunction function = new StarBirdFunction(stmt, environment);
+        environment.Define(stmt.name.Lexeme, function);
+        return null;
+    }
+
     public object VisitIfStmt(Stmt.If stmt)
     {
         if (IsTruthy(Evaluate(stmt.condition)))
@@ -101,6 +126,14 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         object value = Evaluate(stmt.expression);
         Console.WriteLine(Stringify(value));
         return null;
+    }
+
+    public object VisitReturnStmt(Stmt.Return stmt)
+    {
+        object value = null;
+        if (stmt.value != null) value = Evaluate(stmt.value);
+
+        throw new Return(value);
     }
 
     public object VisitVarStmt(Stmt.Var stmt)
@@ -141,7 +174,7 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
     {
         object left = Evaluate(expr.left);
         object right = Evaluate(expr.right);
-
+        
         switch (expr.op.Type)
         {
             case TokenType.BANG_EQUAL: 
@@ -194,6 +227,31 @@ public class Interpreter : Expr.IVisitor<object>,Stmt.IVisitor<object>
         }
         
         return null;
+    }
+
+    public object VisitCallExpr(Expr.Call expr)
+    {
+        object callee = Evaluate(expr.callee);
+
+        List<object> args = [];
+        foreach (var argument in expr.arguments)
+        {
+            args.Add(Evaluate(argument));
+        }
+
+        if (!(callee is StarBirdCallable)) {
+            throw new RuntimeError(expr.paren,
+                "Can only call functions and classes.");
+        }
+
+        StarBirdCallable function = (StarBirdCallable)callee;
+        if (args.Count != function.arity()) {
+            throw new RuntimeError(expr.paren, "Expected " +
+                                               function.arity() + " arguments but got " +
+                                               args.Count + ".");
+        }
+
+        return function.call(this, args);
     }
     
     public object VisitUnaryExpr(Expr.Unary expr) {
